@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Semantic Flip</title>
+<meta name="description" content="Semantic Flip: synthetic OOD generation for robust refusal in embodied question answering and spatial localization."/>
+<meta property="og:title" content="Semantic Flip"/>
+<meta property="og:description" content="Synthetic OOD generation for robust refusal in embodied question answering and spatial localization."/>
+<meta property="og:image" content="https://raw.githubusercontent.com/ndb796/SemanticFlip/main/assets/overview.png"/>
+<meta property="og:type" content="website"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAFAFB; --panel:#FFFFFF;
+    --ink:#181A1F; --ink2:#2C313B; --muted:#5C6470; --faint:#8A909C;
+    --line:#E6E8EC; --line2:#D7DAE1;
+    --abstain:#B0303F; --abstain-soft:#FBEDEF; --abstain-line:#E6C3C8;
+    --pass:#1C7D5A; --pass-soft:#E8F4EE;
+    --maxw:1000px;
+    --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --sans:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    --disp:"Archivo",var(--sans);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+    font-size:16.5px;line-height:1.62;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 26px}
+  a{color:var(--abstain);text-decoration:none}
+  a:hover{text-decoration:underline;text-underline-offset:2px}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--faint)}
+  .eyebrow b{color:var(--abstain)}
+
+  .top{border-top:3px solid var(--ink)}
+  header{padding:34px 0 30px}
+  .mast-eye{margin-bottom:18px}
+  h1{font-family:var(--disp);font-weight:800;font-size:clamp(31px,5.4vw,52px);
+    line-height:1.02;letter-spacing:-.018em;margin:0 0 14px}
+  h1 .fl{color:var(--abstain);font-style:italic;font-weight:900}
+  .tagline{font-size:18px;color:var(--ink2);max-width:62ch;margin:0 0 26px;font-weight:400}
+  .metabar{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;
+    flex-wrap:wrap;border-top:1px solid var(--line);padding-top:18px}
+  .who{font-size:15px;color:var(--ink2)}
+  .who .names{font-weight:600;color:var(--ink)}
+  .who sup{color:var(--abstain);font-weight:700}
+  .who .aff{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:5px;letter-spacing:.02em}
+  .actions{display:flex;gap:9px;flex-wrap:wrap}
+  .btn{font-family:var(--mono);font-size:12.5px;font-weight:600;letter-spacing:.02em;
+    display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:7px;
+    background:var(--ink);color:#fff;border:1px solid var(--ink);transition:transform .14s ease}
+  .btn:hover{transform:translateY(-2px);text-decoration:none}
+  .btn .dot{width:6px;height:6px;border-radius:50%;background:#fff;opacity:.7}
+  .btn.ghost{background:transparent;color:var(--ink);border-color:var(--line2)}
+  .btn.ghost:hover{border-color:var(--ink)}
+  .btn.soon{background:transparent;color:var(--muted);border-color:var(--line);cursor:default}
+  .btn.soon:hover{transform:none}
+
+  .intro{padding:30px 0 4px}
+  .intro p{font-size:17px;color:var(--ink2);max-width:78ch;margin:0 0 14px}
+
+  figure{margin:0}
+  .fig{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;
+    box-shadow:0 1px 0 var(--line),0 14px 30px -22px rgba(20,22,30,.30)}
+  .fig img{display:block;width:100%}
+  .fig figcaption{display:flex;gap:12px;align-items:baseline;
+    padding:13px 18px;border-top:1px solid var(--line);background:#fcfcfd;font-size:13.5px;color:var(--muted)}
+  .fig .tag{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.1em;
+    color:var(--abstain);white-space:nowrap;text-transform:uppercase}
+  .hero-fig{margin-top:24px}
+
+  .sec{padding:52px 0;border-top:1px solid var(--line)}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:20px}
+  .sec-head .n{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--faint)}
+  .sec h2{font-family:var(--disp);font-weight:700;font-size:25px;letter-spacing:-.01em;margin:0;color:var(--ink)}
+  .lead{font-size:17px;color:var(--ink2);margin:0 0 16px;max-width:74ch}
+  .blockquote{border-left:3px solid var(--abstain);background:var(--panel);border:1px solid var(--line);
+    border-left-width:3px;border-radius:10px;padding:18px 22px;color:var(--ink2);font-size:15.5px}
+  .blockquote p{margin:0 0 12px}
+  .blockquote p:last-child{margin:0}
+
+  .flipband{display:grid;grid-template-columns:1fr 64px 1fr;align-items:stretch;
+    margin:18px 0 4px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}
+  .flipcell{padding:22px 22px}
+  .flipcell .k{font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.13em;text-transform:uppercase}
+  .flipcell .pair{font-family:var(--mono);font-size:14px;margin:9px 0 4px;color:var(--ink)}
+  .flipcell .desc{font-size:13.5px;color:var(--muted);line-height:1.5}
+  .flipcell.ground{background:var(--pass-soft)}
+  .flipcell.ground .k{color:var(--pass)} .flipcell.ground .verdict{color:var(--pass);font-weight:700}
+  .flipcell.flip{background:var(--abstain-soft)}
+  .flipcell.flip .k{color:var(--abstain)} .flipcell.flip .verdict{color:var(--abstain);font-weight:700}
+  .flippivot{display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:var(--ink);color:#fff;font-family:var(--mono);font-size:10px;font-weight:600;
+    letter-spacing:.12em;gap:5px}
+  .flippivot .ar{font-size:19px;line-height:1}
+
+  .pts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:6px 0 18px}
+  .pt{border:1px solid var(--line);border-radius:10px;padding:18px 20px;background:var(--panel)}
+  .pt .h{font-family:var(--mono);font-weight:600;font-size:13px;letter-spacing:.03em;margin-bottom:7px}
+  .pt.q .h{color:var(--abstain)} .pt.v .h{color:var(--pass)}
+  .pt p{margin:0;font-size:14px;color:var(--ink2)}
+
+  .scoreband{display:flex;flex-wrap:wrap;gap:0;border:1px solid var(--line);border-left:4px solid var(--abstain);
+    border-radius:10px;overflow:hidden;background:var(--panel);margin:6px 0 26px}
+  .score{flex:1 1 220px;padding:20px 24px}
+  .score + .score{border-left:1px solid var(--line)}
+  .score .lab{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+  .score .num{font-family:var(--disp);font-weight:800;font-size:43px;line-height:1.05;letter-spacing:-.02em;color:var(--ink);margin-top:6px}
+  .score .num .u{font-size:15px;font-weight:600;color:var(--faint);margin-left:6px;font-family:var(--mono)}
+  .score .sub{font-size:13px;color:var(--muted);margin-top:4px}
+
+  .tbl-h{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.05em;
+    color:var(--ink2);text-transform:uppercase;margin:24px 0 8px}
+  table{width:100%;border-collapse:collapse;font-size:14.5px;font-variant-numeric:tabular-nums}
+  thead th{font-family:var(--mono);font-weight:600;font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--muted);padding:8px 10px;border-bottom:1.5px solid var(--line2);text-align:center}
+  thead th:first-child{text-align:left}
+  tbody td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:center;color:var(--ink2)}
+  tbody td:first-child{text-align:left}
+  tr.ours td{background:#fcf6f7;font-weight:700;color:var(--ink)}
+  tr.ours td:first-child{box-shadow:inset 3px 0 0 var(--abstain)}
+  .soonpill{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.06em;
+    color:var(--abstain);background:var(--abstain-soft);border:1px solid var(--abstain-line);
+    border-radius:5px;padding:2px 9px;text-transform:uppercase}
+  .tnote{font-size:13.5px;color:var(--muted);margin-top:12px}
+
+  .status{border:1px solid var(--line);border-left:4px solid var(--ink);border-radius:10px;
+    background:var(--panel);padding:20px 22px;margin-top:6px}
+  .status .st{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--faint)}
+  .status .ti{font-weight:600;color:var(--ink);margin-top:6px}
+  .status .ds{font-size:14px;color:var(--muted);margin-top:5px}
+  .status code{font-family:var(--mono);font-size:13px;background:#f1f2f5;padding:1px 6px;border-radius:5px}
+
+  pre{background:#15171C;color:#e9ebf0;border-radius:11px;padding:18px 20px;overflow:auto;
+    font-family:var(--mono);font-size:12.5px;line-height:1.62;border:1px solid #20242c}
+  pre .c{color:#8b93a3}
+
+  footer{padding:30px 0 60px;border-top:3px solid var(--ink);margin-top:10px}
+  footer .row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+  footer a{color:var(--ink2)}
+
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  @media(max-width:720px){
+    .flipband{grid-template-columns:1fr}
+    .flippivot{flex-direction:row;padding:8px;gap:10px}
+    .flippivot .ar{transform:rotate(90deg)}
+    .pts{grid-template-columns:1fr}
+    .metabar{align-items:flex-start}
+    .score + .score{border-left:none;border-top:1px solid var(--line)}
+  }
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.btn:hover{transform:none}}
+</style>
+</head>
+<body>
+
+<div class="top"></div>
+<header>
+  <div class="wrap">
+    <div class="mast-eye eyebrow">Knowing when to say <b>&ldquo;I don&rsquo;t know&rdquo;</b> &nbsp;/&nbsp; embodied agents</div>
+    <h1>Semantic <span class="fl">Flip</span></h1>
+    <p class="tagline">Synthetic OOD generation for robust refusal in embodied question answering and spatial localization.</p>
+    <div class="metabar">
+      <div class="who">
+        <div class="names">Dongbin Na<sup>*&dagger;</sup> &nbsp; Chanwoo Kim<sup>*</sup> &nbsp; Giyun Choi &nbsp; Dooyoung Hong<sup>&dagger;</sup></div>
+        <div class="aff">RGA Inc. &nbsp;·&nbsp; *equal contribution &nbsp;·&nbsp; &dagger;corresponding</div>
+      </div>
+      <div class="actions">
+        <a class="btn" href="https://github.com/ndb796/SemanticFlip"><span class="dot"></span>Code</a>
+        <a class="btn ghost" href="https://github.com/ndb796/SemanticFlip/blob/main/notebooks/reproduce.ipynb">Reproduce</a>
+        <a class="btn ghost" href="#data">Dataset</a>
+        <!-- arXiv id is not public yet; swap this href when the preprint is live -->
+        <a class="btn soon" href="#">Paper · arXiv soon</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="intro">
+    <p>Embodied vision-language agents tend to answer confidently even when their visual memory does not actually support the query, which becomes dangerous the moment a wrong answer turns into a wrong physical action. Semantic Flip teaches the agent <i>when to refuse</i>. It synthesizes out-of-distribution (OOD) query&ndash;memory pairs from in-distribution data, with no external OOD annotation, and trains a small rejection module on top of a <b>frozen</b> VLM. The module drops into an existing pipeline without touching the underlying model.</p>
+  </div>
+
+  <figure class="fig hero-fig reveal">
+    <img src="https://raw.githubusercontent.com/ndb796/SemanticFlip/main/assets/overview.png" alt="Semantic Flip overview"/>
+    <figcaption><span class="tag">Overview</span><span>From answerable training pairs, Q-Flip corrupts the query and V-Flip corrupts the video; a frozen VLM encodes all three distributions and only a small rejection gate is trained, then plugs into both an EQA decoder and a navigation agent.</span></figcaption>
+  </figure>
+</div>
+
+<main class="wrap">
+
+  <section class="sec" id="abstract">
+    <div class="sec-head"><span class="n">&sect;1</span><h2>Abstract</h2></div>
+    <div class="blockquote">
+      <p>Detecting unanswerable user queries remains essential for the reliable deployment of real-world embodied agents. However, modern vision-language models (VLMs) often generate overly confident answers even when the available visual memory cannot support the query. Such overconfidence carries different costs across tasks: the agent may give misleading information in Embodied Question Answering, or pick an arbitrary coordinate and physically guide the user there in spatial reasoning for navigation. Despite these stakes, only a few prior studies address when and how an embodied VLM should respond with &ldquo;I do not know.&rdquo;</p>
+      <p>We propose <b>Semantic Flip</b>, a simple and effective framework that synthesizes auxiliary OOD samples for embodied refusal without external OOD annotation. The key idea is to independently transform the query and the video memory to construct auxiliary OOD pairs that lack sufficient visual grounding. These synthesized pairs train a lightweight rejection module on top of a frozen pretrained VLM, and the module attaches to any existing VLM-based pipeline without retraining the underlying model. Across two complementary benchmarks, Semantic Flip consistently outperforms strong prompting baselines. We also introduce <b>SpaceReject</b>, a new refusal benchmark for spatial localization with deliberately unanswerable queries over long video memory, where Semantic Flip reaches an F1 of 0.9559. All experiments use only open-source models, so the full pipeline is reproducible.</p>
+    </div>
+  </section>
+
+  <section class="sec" id="method">
+    <div class="sec-head"><span class="n">&sect;2</span><h2>Method</h2></div>
+    <p class="lead">Semantic Flip builds two complementary OOD distributions from answerable training pairs by flipping exactly one side of an otherwise answerable pair.</p>
+    <div class="pts">
+      <div class="pt q">
+        <div class="h">Q-Flip &nbsp;·&nbsp; corrupt the query</div>
+        <p>Rewrite the question into an ungroundable variant while keeping the video memory unchanged.</p>
+      </div>
+      <div class="pt v">
+        <div class="h">V-Flip &nbsp;·&nbsp; corrupt the memory</div>
+        <p>Keep the question, but erase its referent from the memory through a parse &rarr; detect &rarr; inpaint pipeline (spaCy, Grounding-DINO, LaMa).</p>
+      </div>
+    </div>
+    <div class="flipband reveal">
+      <div class="flipcell ground">
+        <div class="k">Grounded</div>
+        <div class="pair">(&nbsp;query&nbsp;,&nbsp;memory&nbsp;)</div>
+        <div class="desc">the question is supported by what the robot saw &rarr; <span class="verdict">answer</span></div>
+      </div>
+      <div class="flippivot"><span class="ar">&#8646;</span><span>FLIP</span><span>ONE&nbsp;SIDE</span></div>
+      <div class="flipcell flip">
+        <div class="k">Flipped</div>
+        <div class="pair">(&nbsp;q&#771;&nbsp;,&nbsp;memory&nbsp;) &nbsp;or&nbsp; (&nbsp;query&nbsp;,&nbsp;v&#771;&nbsp;)</div>
+        <div class="desc">one side no longer matches the other &rarr; <span class="verdict">abstain</span></div>
+      </div>
+    </div>
+    <p class="lead" style="margin-top:18px">A frozen VLM encoder produces one joint embedding for the in-distribution, Q-Flip, and V-Flip samples, and only a small 3-layer MLP rejection gate is trained on top. Because the backbone stays frozen, the gate reuses the forward pass the agent already runs and adds essentially no extra inference cost.</p>
+    <figure class="fig reveal" style="margin-top:8px">
+      <img src="https://raw.githubusercontent.com/ndb796/SemanticFlip/main/assets/method.png" alt="Concrete examples of Q-Flip and V-Flip"/>
+      <figcaption><span class="tag">Method</span><span>Q-Flip keeps the video and rewrites the query into an ungroundable variant; V-Flip keeps the query and erases its referent from every frame, so the label flips to abstain.</span></figcaption>
+    </figure>
+  </section>
+
+  <section class="sec" id="results">
+    <div class="sec-head"><span class="n">&sect;3</span><h2>Results</h2></div>
+    <p class="lead">With a frozen 7B encoder and a small head, Semantic Flip outperforms strong prompting baselines on both tasks. It also generalizes to abstention categories never seen during synthesis, e.g. 0.89 OOD recall on <i>Information Unavailability</i>, a category Q-Flip does not target.</p>
+    <div class="scoreband reveal">
+      <div class="score">
+        <div class="lab">AbstainEQA · HM3D-380</div>
+        <div class="num">0.7110<span class="u">F1</span></div>
+        <div class="sub">embodied question answering</div>
+      </div>
+      <div class="score">
+        <div class="lab">SpaceReject</div>
+        <div class="num">0.9559<span class="u">F1</span></div>
+        <div class="sub">spatial localization over long video memory</div>
+      </div>
+    </div>
+
+    <div class="tbl-h">AbstainEQA (HM3D-380)</div>
+    <table>
+      <thead><tr><th>Method</th><th>F1</th><th>Bal. Acc</th><th>Recall</th><th>Spec.</th></tr></thead>
+      <tbody>
+        <tr><td>Qwen2.5-VL-32B prompting (Coarse / Fine / CoT)</td><td colspan="4"><span class="soonpill">Coming soon</span></td></tr>
+        <tr class="ours"><td>Semantic Flip (ours)</td><td>0.7110</td><td>0.6684</td><td>0.8158</td><td>0.5211</td></tr>
+      </tbody>
+    </table>
+
+    <div class="tbl-h">SpaceReject (spatial localization over long video memory)</div>
+    <table>
+      <thead><tr><th>Method</th><th>BalAcc</th><th>F1</th><th>Recall</th><th>Spec.</th></tr></thead>
+      <tbody>
+        <tr><td>C2 (Tool), Qwen3-8B prompting</td><td>0.8778</td><td>0.8874</td><td>0.9630</td><td>0.7926</td></tr>
+        <tr><td>Semantic Flip, Q-Flip only</td><td>0.9504</td><td>0.9494</td><td>0.9363</td><td>0.9644</td></tr>
+        <tr class="ours"><td>Semantic Flip, Q-Flip + V-Flip</td><td>0.9563</td><td>0.9559</td><td>0.9467</td><td>0.9659</td></tr>
+      </tbody>
+    </table>
+    <p class="tnote">Full appendix tables (threshold sweep, fill-operator ablation, pool-size sweep, per-category recall, per-LLM baselines) are reproduced end to end by the
+      <a href="https://github.com/ndb796/SemanticFlip/blob/main/notebooks/reproduce.ipynb">reproduction notebook</a>.</p>
+  </section>
+
+  <section class="sec" id="start">
+    <div class="sec-head"><span class="n">&sect;4</span><h2>Get started</h2></div>
+    <p class="lead">A single 48 GB GPU (e.g. RTX A6000) is enough for the whole pipeline. All checkpoints are public and pulled from the Hugging Face Hub on first use.</p>
+<pre><span class="c"># set up the environment</span>
+git clone https://github.com/ndb796/SemanticFlip.git
+cd SemanticFlip
+conda create -n semflip python=3.10 -y
+conda activate semflip
+pip install -r requirements.txt
+
+<span class="c"># reproduce every AbstainEQA result, top to bottom</span>
+jupyter lab notebooks/reproduce.ipynb</pre>
+    <p class="tnote">Backbones are all open-source: <code style="font-family:var(--mono)">Qwen2.5-VL-7B / 32B-AWQ</code>, <code style="font-family:var(--mono)">Qwen2.5-7B</code>, and <code style="font-family:var(--mono)">grounding-dino-tiny</code>.</p>
+  </section>
+
+  <section class="sec" id="data">
+    <div class="sec-head"><span class="n">&sect;5</span><h2>Dataset</h2></div>
+    <p class="lead">The <b>SpaceReject</b> and <b>SpaceRejectExtra</b> queries, videos, annotations, and trained models will be released on <b>Hugging Face</b>.</p>
+    <!-- swap: replace the card below once the dataset is live on the Hub -->
+    <div class="status">
+      <div class="st">Status &middot; coming soon</div>
+      <div class="ti">Hugging Face release</div>
+      <div class="ds">Will be available at <code>huggingface.co/datasets/ndb796/SpaceReject</code>.</div>
+    </div>
+  </section>
+
+  <section class="sec" id="cite">
+    <div class="sec-head"><span class="n">&sect;6</span><h2>Citation</h2></div>
+<pre>@article{na2026semanticflip,
+  title   = {Semantic Flip: Synthetic OOD Generation for Robust Refusal
+             in Embodied Question Answering and Spatial Localization},
+  author  = {Na, Dongbin and Kim, Chanwoo and Choi, Giyun and Hong, Dooyoung},
+  year    = {2026}
+}</pre>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap row">
+    <div>Dongbin Na &middot; <a href="mailto:dongbinna@postech.ac.kr">dongbinna@postech.ac.kr</a> &nbsp;/&nbsp; Dooyoung Hong &middot; <a href="mailto:dooyoung@rgarobot.com">dooyoung@rgarobot.com</a></div>
+    <div><a href="https://github.com/ndb796/SemanticFlip">github.com/ndb796/SemanticFlip</a></div>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, {threshold:0.12});
+    document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  })();
+</script>
+</body>
+</html>
