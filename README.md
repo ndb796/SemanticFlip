@@ -14,6 +14,8 @@ Embodied vision-language agents tend to answer confidently even when their visua
 
 This repository contains the official source codes for Semantic Flip and the **SpaceReject** benchmark.
 
+<img src="assets/overview.png" width="94%"/>
+
 ## Abstract
 
 > Detecting unanswerable user queries remains essential for the reliable deployment of real-world embodied agents. However, modern vision-language models (VLMs) often generate overly confident answers even when the available visual memory cannot support the query. Such overconfidence carries different costs across tasks: the agent may give misleading information in Embodied Question Answering, or pick an arbitrary coordinate and physically guide the user there in spatial reasoning for navigation. Despite these stakes, only a few prior studies address when and how an embodied VLM should respond with "I do not know."
@@ -27,6 +29,8 @@ Semantic Flip builds two complementary OOD distributions from answerable trainin
 - **V-Flip** keeps the question but erases its referent from the memory through a parse &rarr; detect &rarr; inpaint pipeline (spaCy, Grounding-DINO, LaMa).
 
 A frozen VLM encoder produces one joint embedding for the in-distribution, Q-Flip, and V-Flip samples, and only a small 3-layer MLP rejection gate is trained on top. Because the backbone stays frozen, the gate reuses the forward pass the agent already runs and adds essentially no extra inference cost.
+
+<img src="assets/method.png" width="94%"/>
 
 ## Results
 
